@@ -27,7 +27,7 @@ The results include the following quantities:
 
 When a support lifts off, the calculation in the background switches from the statically overdetermined model (four feet on the floor) to the statically determined model (three feet on the floor).
 
-Mathematically, the corresponding support force is set to $$F_i=0$$ and the spring equation ($$F_i=s_i\cdot D_i$$) of the respective support is removed from the equation system.
+Mathematically, the corresponding support force is set to $F_i=0$ and the spring equation ($F_i=s_i\cdot D_i$) of the respective support is removed from the equation system.
 
 #### Working Radius Tool
 With the **Working Radius** tool we can create a working range limit curve that is limited by different boundaries.
@@ -39,12 +39,12 @@ These boundaries include:
 - Torsional moments ``t14x``, ``t23x`` in the virtual torsion springs of the frame
 For each of the quantities a lower bound and an upper bound can be defined.
 
-For each step $$0°\leq \phi_i \leq 360°$$ the script tries to maximize the working radius ``ro`` within the given bounds using the ``SLSQP`` method ([Sequential Least Squares Programming](https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html#optimize-minimize-slsqp)).
+For each step $0°\leq \phi_i \leq 360°$ the script tries to maximize the working radius ``ro`` within the given bounds using the ``SLSQP`` method ([Sequential Least Squares Programming](https://docs.scipy.org/doc/scipy/reference/optimize.minimize-slsqp.html#optimize-minimize-slsqp)).
 If no solution can be found the algorithm stops after a defined number of iterations.
 
-The actual load moment ``ml`` as input for the calculation is calculated as $$M_L = r_o \cdot F_{ro}$$. This means that only one load on the boom is considered, namely the force at the tip of the boom ``f_ro``. No dead weight of the boom or other additional forces are included in this calculation, because the position of these forces cannot be determined with certainty as a function of the working radius ``ro`` (the same outreach can be achieved with different positions of the boom).                                                                                                                      
+The actual load moment ``ml`` as input for the calculation is calculated as $M_L = r_o \cdot F_{ro}$. This means that only one load on the boom is considered, namely the force at the tip of the boom ``f_ro``. No dead weight of the boom or other additional forces are included in this calculation, because the position of these forces cannot be determined with certainty as a function of the working radius ``ro`` (the same outreach can be achieved with different positions of the boom).                                                                                                                      
 
-**Please be aware that it's easily possible to set the constraints in such a way that there are no more admissible solutions.** In this case the script skips the calculation and steps to next angle $$\phi_i$$ (an error log is shown after the loop finishes).
+**Please be aware that it's easily possible to set the constraints in such a way that there are no more admissible solutions.** In this case the script skips the calculation and steps to next angle $\phi_i$ (an error log is shown after the loop finishes).
 However, the calculation can take very long in this case, because the optimization algorithm tries to determine a solution until the maximum allowed iterations are reached. Check the diagrams next to the polar plot to get an idea of which boundaries might cause problems.
 
 After setting all parameters, the calculation is started with the button.
