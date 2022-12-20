@@ -10,7 +10,7 @@ import pandas as pd
 from stuetzkraft_model_plain import results_plain
 import numpy as np
 import plotly.io as pio
-from stuetzkraft_helpers import rotate
+from stuetzkraft_helpers import rotate, cart2pol
 
 def load_arrow(mlx, mly, df_supports):
     '''
@@ -53,6 +53,33 @@ def load_arrow(mlx, mly, df_supports):
     return arrow_x, arrow_y
 
 
+def results_plot(datasets, x_label, y_label, title=""):
+    
+    fig = go.Figure()
+    
+    for (x, y) in datasets:
+
+        fig.add_trace(
+            go.Scatter(x=x,
+                       y=y,
+                       mode='lines+markers',
+                       name=y.name))
+    
+    # Tight layout, labels, etc.
+    fig.update_layout(margin=dict(l=0, r=0, t=0, b=0),
+                      xaxis_title=x_label,
+                      yaxis_title=y_label,
+                      #paper_bgcolor="LightSteelBlue",
+                      #legend_title_text='',
+                      xaxis_tickformat = '.1f',
+                      yaxis_tickformat = '.1f',
+                      title=title,
+                      )
+    
+    fig = go.FigureWidget(fig)
+    
+    return fig
+
 def topview_plot(d, range_x, range_y):
     ax = d['x14']
     bx = -d['x23']
@@ -86,6 +113,8 @@ def topview_plot(d, range_x, range_y):
     # General plot style settings
     template = 'seaborn' # 'seaborn', 'plotly_white', 'ggplot2', 'plotly_dark', 'presentation' (also: 'plotly+presentation')
     linecolor = 'black'
+    loadcolor = 'red'
+    geocolor = 'blue'
     
     # Support forces scatter plot
     # Replace all negative values in size by zero to prevent exception.
@@ -103,7 +132,7 @@ def topview_plot(d, range_x, range_y):
                      range_x=range_x,
                      range_y=range_y)
     
-    fig.update_traces(textposition='top center')
+    
     
     # Add decoration lines
     trace_ad = go.Scatter(
@@ -136,48 +165,64 @@ def topview_plot(d, range_x, range_y):
                               marker_color=linecolor,
                               showlegend=False)
     
+    trace_deadweight = go.Scatter(x=[d['xe']],
+                                  y=[0.],
+                                  mode='markers+text',
+                                  #marker_size=[d['fe']],
+                                  marker_color=loadcolor,
+                                  text = 'Dead weight (fe)',
+                                  showlegend=False)
+    
     fig.add_trace(trace_ad)
     fig.add_trace(trace_bc)
     fig.add_trace(trace_mid)
     fig.add_trace(trace_center)
+    fig.add_trace(trace_deadweight)
     
     arr_x, arr_y = load_arrow(d['mlx'], d['mly'], df_supports)
     
     boom_x, boom_y = rotate(np.asarray([arr_x, arr_y]), -np.pi/2.)
     
     # Add load moment vector arrow
-    fig.add_annotation(x=arr_x,  # arrows' head
-                       y=arr_y,  # arrows' head
-                       ax=0.,  # arrows' tail
-                       ay=0.,  # arrows' tail
+    # Arrow is reversed in order to have text label show up at arrow tip. Hence
+    # arrowside='start'
+    fig.add_annotation(x=0.,  # arrows' head
+                       y=0.,  # arrows' head
+                       ax=arr_x,  # arrows' tail
+                       ay=arr_y,  # arrows' tail
                        xref='x',
                        yref='y',
                        axref='x',
                        ayref='y',
-                       text='',
+                       text='Load moment (ml)',
                        showarrow=True,
                        arrowhead=2,
                        arrowsize=1,
                        arrowwidth=2,
-                       arrowcolor='red',
+                       arrowcolor=loadcolor,
+                       arrowside='start',
                        #xanchor='left'
                        )
     
     # Add boom arrow
-    fig.add_annotation(x=boom_x,  # arrows' head
-                       y=boom_y,  # arrows' head
-                       ax=0.,  # arrows' tail
-                       ay=0.,  # arrows' tail
+    fig.add_annotation(x=0.,  # arrows' head
+                       y=0.,  # arrows' head
+                       ax=boom_x,  # arrows' tail
+                       ay=boom_y,  # arrows' tail
                        xref='x',
                        yref='y',
                        axref='x',
                        ayref='y',
-                       text='',  # if you want only the arrow
+                       text='Boom',  # if you want only the arrow
                        showarrow=True,
                        arrowhead=7,
                        arrowsize=1,
                        arrowwidth=2,
-                       arrowcolor='blue')
+                       arrowcolor=geocolor,
+                       arrowside='start')
+    
+    # Set text label positions
+    fig.update_traces(textposition='top center')
     
     # Scale x:y 1:1
     fig.update_yaxes(scaleanchor = "x", scaleratio = 1)
@@ -307,6 +352,77 @@ def support_plot_3d(d):
     
     return fig
 
+def topview_plot_ro_polar(d, d_ro, mode='lines+markers'):
+    
+    ax = d['x14']
+    bx = -d['x23']
+    cx = -d['x23']
+    dx = d['x14']
+    
+    ay = d['y1']
+    by = d['y2']
+    cy = -d['y3']
+    dy = -d['y4']
+    
+    supports_polar = [cart2pol(ax, ay),  # Returns r, theta (in rad!)
+                      cart2pol(bx, by),
+                      cart2pol(cx, cy),
+                      cart2pol(dx, dy)]
+    
+    df_supports = pd.DataFrame(supports_polar,
+                               columns=['r', 'theta'],
+                               index=['A', 'B', 'C', 'D'])
+    
+    # px.scatter_ploar needs degrees
+    df_supports['theta'] = np.rad2deg(df_supports['theta'])
+
+    df_ro = pd.DataFrame(d_ro,
+                         columns=['ro', 'phi'])
+    
+    # General plot style settings
+    template = 'seaborn' # 'seaborn', 'plotly_white', 'ggplot2', 'plotly_dark', 'presentation' (also: 'plotly+presentation')
+    linecolor = 'black'
+    loadcolor = 'red'
+    geocolor = 'blue'
+    rocolor = 'salmon'
+    
+    r_max = df_ro['ro'].max()
+    
+    # Position of supports in polar scatter plot
+    fig = px.scatter_polar(df_supports,
+                           r='r',
+                           theta='theta',
+                           color=df_supports.index,
+                           template=template,
+                           start_angle=0,
+                           direction='counterclockwise',
+                           range_r=[0., r_max*1.1])
+    
+    
+    fig.add_trace(
+        go.Scatterpolar(
+            r=df_ro['ro'],
+            theta=df_ro['phi'],
+            mode=mode,
+            name='Max Reachout',
+            line_color=rocolor,
+            thetaunit='degrees'))
+        
+    # Legend title
+    fig.update_layout(legend_title_text='')
+    
+    # Tight layout
+    fig.update_layout(margin=dict(l=0, r=0, t=0, b=0),
+                      #paper_bgcolor="LightSteelBlue",
+                      template=template
+                      )
+    
+    # Construct FigureWidget from graph object
+
+    fig = go.FigureWidget(fig)
+    
+    return fig
+    
 def sideview_plot(d, plane, proj_type='perspective'):
     '''
     Side view plot
