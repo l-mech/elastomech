@@ -27,7 +27,7 @@ The results include the following quantities:
 
 When a support lifts off, the calculation in the background switches from the statically overdetermined model (four feet on the floor) to the statically determined model (three feet on the floor).
 
-Mathematically, the corresponding support force is set to $F_i=0$ and the spring equation ($F_i=s_i\cdot D_i$) of the respective support is removed from the equation system.
+Mathematically, the corresponding support force is set to $F_i=0$ and the spring equation $F_i=s_i\cdot D_i$ of the respective support is removed from the equation system.
 
 #### Working Radius Tool
 With the **Working Radius** tool we can create a working range limit curve that is limited by different boundaries.
