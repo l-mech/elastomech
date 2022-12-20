@@ -1,4 +1,5 @@
 # elastomech.py 🛠
+[Run on Streamlit Cloud](https://l-mech-elastomech-home-dinx3b.streamlit.app/)
 
 ## Support forces and working radius using a substitute model 
 
