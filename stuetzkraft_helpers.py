@@ -6,7 +6,7 @@ Created on Mon Dec  5 11:05:53 2022
 """
 import numpy as np
 from stuetzkraft_model_plain import results_plain, results_liftoff_plain
-from scipy.optimize import minimize, shgo
+from scipy.optimize import minimize
 
 def cart2pol(x, y):
     rho = np.sqrt(x**2 + y**2)

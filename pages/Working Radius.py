@@ -90,9 +90,9 @@ if check_password():
     
     # Start layouting
     # Set wide mode by default
-    st.set_page_config(page_title='Working Radius',
-                       page_icon="🔵",
-                       layout='wide')
+    # st.set_page_config(page_title='Working Radius',
+    #                    page_icon="🔵",
+    #                    layout='wide')
     
     st.title('Ausladungsgrenzen')# Placeholder for run settings
     inp_csv_placeholder = st.sidebar.empty()

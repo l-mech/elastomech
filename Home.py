@@ -7,6 +7,11 @@ Created on Mon Dec 19 15:03:46 2022
 
 import streamlit as st
 
+st.set_page_config(
+    page_title="elastomech",
+    page_icon="🛠",
+    layout='wide')
+
 def check_password():
     """Returns `True` if the user had the correct password."""
 
@@ -37,12 +42,7 @@ def check_password():
 
 
 if check_password():
-    
-    st.set_page_config(
-        page_title="elastomech",
-        page_icon="🛠",
-        layout='wide')
-    
+        
     tab1, tab2 = st.tabs(["English", "Deutsch"])
     
     with tab1:

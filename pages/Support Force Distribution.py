@@ -31,9 +31,9 @@ if check_password():
     
     # Start layouting
     # Set wide mode by default
-    st.set_page_config(page_title='Support Force Distribution',
-                       page_icon="📐",
-                       layout='wide')
+    # st.set_page_config(page_title='Support Force Distribution',
+    #                    page_icon="📐",
+    #                    layout='wide')
     
     st.title('Stützkraftverteilung')
     st.sidebar.header('Load parameters')

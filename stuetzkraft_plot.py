@@ -76,7 +76,7 @@ def results_plot(datasets, x_label, y_label, title=""):
                       title=title,
                       )
     
-    fig = go.FigureWidget(fig)
+    #fig = go.FigureWidget(fig)
     
     return fig
 
@@ -240,7 +240,7 @@ def topview_plot(d, range_x, range_y):
     
     # Construct FigureWidget from graph object
 
-    fig = go.FigureWidget(fig)
+    #fig = go.FigureWidget(fig)
     
     return fig
 
@@ -348,7 +348,7 @@ def support_plot_3d(d):
     
     # Construct FigureWidget from graph object
 
-    fig = go.FigureWidget(fig)
+    #fig = go.FigureWidget(fig)
     
     return fig
 
@@ -419,7 +419,7 @@ def topview_plot_ro_polar(d, d_ro, mode='lines+markers'):
     
     # Construct FigureWidget from graph object
 
-    fig = go.FigureWidget(fig)
+    #fig = go.FigureWidget(fig)
     
     return fig
     
