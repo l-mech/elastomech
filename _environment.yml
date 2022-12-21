@@ -1,0 +1,13 @@
+name: stuetz
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - streamlit=1.11.0
+  - pandas=1.5.1
+  - plotly=5.9.0
+  - numpy=1.23.4
+  - scipy=1.9.3
+  - gxx_linux-64
+  - libstdcxx-ng
+  - gcc
