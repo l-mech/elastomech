@@ -80,7 +80,13 @@ def grenzkurve(inputs):
 
 if check_password():
     # Dashboard starts here
-    ini, _ = loadcases.ro_default()
+    opts = ['Default', 'Pillow A']
+    lcs = {'Default': loadcases.ro_default(),
+           'Pillow A': loadcases.ro_pillow_a()}
+    
+    st.sidebar.header('Import Loadcase')
+    selection = st.sidebar.selectbox('Select a predefined data set', options=opts, index=0, help='Lodcase data sets are defined in elastomech\loadcases.py', key='sel-lc')
+    ini, _ = lcs[selection]
     export_dfs = []
     
     # Initialize session state
@@ -94,48 +100,53 @@ if check_password():
     #                    page_icon="🔵",
     #                    layout='wide')
     
-    st.title('Ausladungsgrenzen')# Placeholder for run settings
-    inp_csv_placeholder = st.sidebar.empty()
+    st.title('Ausladungsgrenzen')
+    inp_csv_placeholder = st.empty()
+    
+    # Create sliders (Bounds)
+    # Using sliders for bounds is beneficial since a single slider can be used 
+    # to set the lower and the upper bound
+    with st.expander('👉 Click to define Boundaries'):
+        st.header('Bounds')
+        # Pattern c_row_column
+        c11, _, c12 = st.columns([10, 1, 10])
+        with c11:
+            ro_lb, ro_ub = st.slider('Ausladung min/max (ro)', min_value=lim['ro_min'], max_value=lim['ro_max'], value=(lim['ro_min'], lim['ro_max']), step=0.1, key='sl-ro')
+            rl_lb, rl_ub = st.slider('Restlast min/max (rl)', min_value=lim['rl_min'], max_value=lim['rl_max'], value=(lim['rl_min'], lim['rl_max']), step=1., key='sl-rl')
+            t14x_lb, t14x_ub = st.slider('Torsionsmoment vorne min/max (t14x)', min_value=lim['t14x_min'], max_value=lim['t14x_max'], value=(lim['t14x_min'], lim['t14x_max']), step=1., key='sl-t14x')
+            t23x_lb, t23x_ub = st.slider('Torsionsmoment hinten min/max (t23x)', min_value=lim['t23x_min'], max_value=lim['t23x_max'], value=(lim['t23x_min'], lim['t23x_max']), step=1., key='sl-t23x')
+            # Reset button
+            st.button("Reset Limits",
+                              on_click=_update_slider,
+                              kwargs={'slider_keys': ['sl-ro', 'sl-rl', 'sl-f1', 'sl-f2', 'sl-f3', 'sl-f4', 'sl-t14x', 'sl-t23x'], 
+                                      'values': [
+                                          (lim['ro_min'], lim['ro_max']),
+                                          (lim['rl_min'], lim['rl_max']),
+                                          (lim['f1_min'], lim['f1_max']),
+                                          (lim['f2_min'], lim['f2_max']),
+                                          (lim['f3_min'], lim['f3_max']),
+                                          (lim['f4_min'], lim['f4_max']),
+                                          (lim['t14x_min'], lim['t14x_max']),
+                                          (lim['t23x_min'], lim['t23x_max']),
+                                          ]})
+        with c12:
+            f1_lb, f1_ub = st.slider('Stützenkraft A min/max (f1)', min_value=lim['f1_min'], max_value=lim['f1_max'], value=(lim['f1_min'], lim['f1_max']), step=1., key='sl-f1')
+            f2_lb, f2_ub = st.slider('Stützenkraft B min/max (f2)', min_value=lim['f2_min'], max_value=lim['f2_max'], value=(lim['f2_min'], lim['f2_max']), step=1., key='sl-f2')
+            f3_lb, f3_ub = st.slider('Stützenkraft C min/max (f3)', min_value=lim['f3_min'], max_value=lim['f3_max'], value=(lim['f3_min'], lim['f3_max']), step=1., key='sl-f3')
+            f4_lb, f4_ub = st.slider('Stützenkraft D min/max (f4)', min_value=lim['f4_min'], max_value=lim['f4_max'], value=(lim['f4_min'], lim['f4_max']), step=1., key='sl-f4')
+   
+    # Placeholder for run settings
+
     
     # Placeholder for run settings
     run_placeholder = st.sidebar.empty()
-    
-    # Create sliders in sidebar (Bounds)
-    st.sidebar.header('Bounds')
-    ro_lb, ro_ub = st.sidebar.slider('Ausladung min/max (ro)', min_value=lim['ro_min'], max_value=lim['ro_max'], value=(lim['ro_min'], lim['ro_max']), step=0.1, key='sl-ro')
-    
-    rl_lb, rl_ub = st.sidebar.slider('Restlast min/max (rl)', min_value=lim['rl_min'], max_value=lim['rl_max'], value=(lim['rl_min'], lim['rl_max']), step=1., key='sl-rl')
-    
-    f1_lb, f1_ub = st.sidebar.slider('Stützenkraft A min/max (f1)', min_value=lim['f1_min'], max_value=lim['f1_max'], value=(lim['f1_min'], lim['f1_max']), step=1., key='sl-f1')
-    f2_lb, f2_ub = st.sidebar.slider('Stützenkraft B min/max (f2)', min_value=lim['f2_min'], max_value=lim['f2_max'], value=(lim['f2_min'], lim['f2_max']), step=1., key='sl-f2')
-    f3_lb, f3_ub = st.sidebar.slider('Stützenkraft C min/max (f3)', min_value=lim['f3_min'], max_value=lim['f3_max'], value=(lim['f3_min'], lim['f3_max']), step=1., key='sl-f3')
-    f4_lb, f4_ub = st.sidebar.slider('Stützenkraft D min/max (f4)', min_value=lim['f4_min'], max_value=lim['f4_max'], value=(lim['f4_min'], lim['f4_max']), step=1., key='sl-f4')
-    
-    t14x_lb, t14x_ub = st.sidebar.slider('Torsionsmoment vorne min/max (t14x)', min_value=lim['t14x_min'], max_value=lim['t14x_max'], value=(lim['t14x_min'], lim['t14x_max']), step=1., key='sl-t14x')
-    t23x_lb, t23x_ub = st.sidebar.slider('Torsionsmoment hinten min/max (t23x)', min_value=lim['t23x_min'], max_value=lim['t23x_max'], value=(lim['t23x_min'], lim['t23x_max']), step=1., key='sl-t23x')
-    
-    # Reset button
-    st.sidebar.button("Reset Limits",
-                      on_click=_update_slider,
-                      kwargs={'slider_keys': ['sl-ro', 'sl-rl', 'sl-f1', 'sl-f2', 'sl-f3', 'sl-f4', 'sl-t14x', 'sl-t23x'], 
-                              'values': [
-                                  (lim['ro_min'], lim['ro_max']),
-                                  (lim['rl_min'], lim['rl_max']),
-                                  (lim['f1_min'], lim['f1_max']),
-                                  (lim['f2_min'], lim['f2_max']),
-                                  (lim['f3_min'], lim['f3_max']),
-                                  (lim['f4_min'], lim['f4_max']),
-                                  (lim['t14x_min'], lim['t14x_max']),
-                                  (lim['t23x_min'], lim['t23x_max']),
-                                  ]}
-                      )
-    
+     
     # Create sliders in sidebar (Loads)
     st.sidebar.header('Load parameters')
-    fl = st.sidebar.slider('z Load force (fl)', min_value=lim['fl_min'], max_value=lim['fl_max'], value=ini['fl'], step=1., key='sl-fl')
-    f_ro = st.sidebar.slider('Force at boom tip (f_ro)', lim['f_ro_min'], lim['f_ro_max'], ini['f_ro'], key='sl-fro')
-    fe = st.sidebar.slider('Dead weight (fe)', min_value=lim['fe_min'], max_value=lim['fe_max'], value=ini['fe'], step=1., key='sl-fe')
-    xe = st.sidebar.slider('Distance Ring – Dead weight (xe)', min_value=lim['xe_min'], max_value=lim['xe_max'], value=ini['xe'], key='sl-xe')
+    fl = st.sidebar.number_input('z Load force (fl)', min_value=lim['fl_min'], max_value=lim['fl_max'], value=ini['fl'], step=1., format='%.2f', key='sl-fl')
+    f_ro = st.sidebar.number_input('Force at boom tip (f_ro)', lim['f_ro_min'], lim['f_ro_max'], ini['f_ro'], step=1., format='%.2f', key='sl-fro')
+    fe = st.sidebar.number_input('Dead weight (fe)', min_value=lim['fe_min'], max_value=lim['fe_max'], value=ini['fe'], step=1., format='%.2f', help='Attention. This is a force, not a weight.', key='sl-fe')
+    xe = st.sidebar.number_input('Distance Ring – Dead weight (xe)', min_value=lim['xe_min'], max_value=lim['xe_max'], value=ini['xe'], step=0.001, format='%.3f', key='sl-xe')
     
     # Reset button
     st.sidebar.button("Reset Loads",
@@ -147,12 +158,12 @@ if check_password():
     # Create sliders in sidebar (Geometry)
     st.sidebar.header('Geometry parameters')
     
-    y1 = st.sidebar.slider('Support A (y1)', lim['y_min'], lim['y_max'], ini['y1'], key='sl-y1')
-    y2 = st.sidebar.slider('Support B (y2)', lim['y_min'], lim['y_max'], ini['y2'], key='sl-y2')
-    y3 = st.sidebar.slider('Support C (y3)', lim['y_min'], lim['y_max'], ini['y3'], key='sl-y3')
-    y4 = st.sidebar.slider('Support D (y4)', lim['y_min'], lim['y_max'], ini['y4'], key='sl-y4')
-    x14 = st.sidebar.slider('Distance Front – Ring (x14)', lim['x_min'], lim['x_max'], ini['x14'], key='sl-x14')
-    x23 = st.sidebar.slider('Distance Rear – Ring (x23)', lim['x_min'], lim['x_max'], ini['x23'], key='sl-x23')
+    y1 = st.sidebar.number_input('Support A (y1)', lim['y_min'], lim['y_max'], ini['y1'], step=0.001, format='%.3f', key='sl-y1')
+    y2 = st.sidebar.number_input('Support B (y2)', lim['y_min'], lim['y_max'], ini['y2'], step=0.001, format='%.3f', key='sl-y2')
+    y3 = st.sidebar.number_input('Support C (y3)', lim['y_min'], lim['y_max'], ini['y3'], step=0.001, format='%.3f', key='sl-y3')
+    y4 = st.sidebar.number_input('Support D (y4)', lim['y_min'], lim['y_max'], ini['y4'], step=0.001, format='%.3f', key='sl-y4')
+    x14 = st.sidebar.number_input('Distance Front – Ring (x14)', lim['x_min'], lim['x_max'], ini['x14'], step=0.001, format='%.3f', key='sl-x14')
+    x23 = st.sidebar.number_input('Distance Rear – Ring (x23)', lim['x_min'], lim['x_max'], ini['x23'], step=0.001, format='%.3f', key='sl-x23')
     
     # Reset button
     st.sidebar.button("Reset Geometry",
@@ -163,9 +174,9 @@ if check_password():
     
     # Create sliders in sidebar (Springs)
     st.sidebar.header('Hooke parameters')
-    d14 = st.sidebar.slider('Torsion spring rate front (d14)', lim['dt_min'], lim['dt_max'], ini['d14'], 100., key='sl-d14')
-    d23 = st.sidebar.slider('Torsion spring rate rear (d23)', lim['dt_min'], lim['dt_max'], ini['d23'], 100., key='sl-d23')
-    d1 = st.sidebar.slider('Compression spring rate @ ABCD (d1...d4)', lim['d_min'], lim['d_max'], ini['d1'], 100., key='sl-d1')
+    d14 = st.sidebar.number_input('Torsion spring rate front (d14)', lim['dt_min'], lim['dt_max'], ini['d14'], step=1.0e+4, format="%.4e", key='sl-d14')
+    d23 = st.sidebar.number_input('Torsion spring rate rear (d23)', lim['dt_min'], lim['dt_max'], ini['d23'], step=1.0e+4, format="%.4e", key='sl-d23')
+    d1 = st.sidebar.number_input('Compression spring rate @ ABCD (d1...d4)', lim['d_min'], lim['d_max'], ini['d1'], step=1.0e+4, format="%.4e", key='sl-d1')
     d2 = d1
     d3 = d1
     d4 = d1

@@ -70,11 +70,11 @@ lim_ro = {  # Parametergrenzen
     'f4_min': 0.,
     'f4_max': 100000.,
     'f_ro_min': 0.,
-    'f_ro_max': 800.*10.,
-    't14x_min': -150000.,
-    't14x_max': 150000.,
-    't23x_min': -150000.,
-    't23x_max': 150000.,
+    'f_ro_max': 3000.*10.,
+    't14x_min': -200000.,
+    't14x_max': 200000.,
+    't23x_min': -200000.,
+    't23x_max': 200000.,
     }
       
 def elast_a():
@@ -497,6 +497,52 @@ def ro_default():
         's4': 0.00303885534735296,
         't14x': -27362.5783348254,
         't23x': 97875.9155406819,
+        }
+    
+    return ini, expected
+
+def ro_pillow_a():
+    '''
+    Testcase Kissenform
+    Normiert@
+    - phi = 0°
+    - Ausladung 30m
+    - FKorb 2542kg --> ml 748250.3Nm
+    - Feigen 5000N
+    '''
+    ini = {  # Lasten
+        'fl': 50000.,
+        'mlx': 125238.493875507,
+        'mly': -2.30153620899991E-11,
+        'fe': 5000.,
+        'xe': 3.2,
+        'h': 3.,
+        'x14': 4.805,
+        'x23': 0.78,
+        'd14': 30230369.9624028,
+        'd23': 155189025.287762,
+        'd': 3001412.83555556,
+        'phi_deg_boom': 270.,
+        'f_ro': 2542.*9.81,
+        }
+    
+    ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
+    
+    # Symmetrie
+    ini['y1'] = ini['h']
+    ini['y2'] = ini['h']
+    ini['y3'] = ini['h']
+    ini['y4'] = ini['h']  
+    # Boom angle
+    ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
+    # d
+    ini['d1'] = ini['d']
+    ini['d2'] = ini['d']
+    ini['d3'] = ini['d']
+    ini['d4'] = ini['d']
+        
+    expected = {
+
         }
     
     return ini, expected

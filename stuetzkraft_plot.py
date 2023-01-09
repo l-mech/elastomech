@@ -381,7 +381,7 @@ def topview_plot_ro_polar(d, d_ro, mode='lines+markers'):
     
     # General plot style settings
     template = 'seaborn' # 'seaborn', 'plotly_white', 'ggplot2', 'plotly_dark', 'presentation' (also: 'plotly+presentation')
-    linecolor = 'black'
+    linecolor = 'grey'
     loadcolor = 'red'
     geocolor = 'blue'
     rocolor = 'salmon'
@@ -398,7 +398,44 @@ def topview_plot_ro_polar(d, d_ro, mode='lines+markers'):
                            direction='counterclockwise',
                            range_r=[0., r_max*1.1])
     
+    # Add decoration lines
+    # A--D
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[df_supports.loc['A', 'r'],
+               df_supports.loc['D', 'r']],
+            theta=[df_supports.loc['A', 'theta'],
+                   df_supports.loc['D', 'theta']],
+            mode='lines',
+            line=dict(color=linecolor),
+            showlegend=False))
+    # B--C
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[df_supports.loc['B', 'r'],
+               df_supports.loc['C', 'r']],
+            theta=[df_supports.loc['B', 'theta'],
+                   df_supports.loc['C', 'theta']],
+            mode='lines',
+            line=dict(color=linecolor),
+            showlegend=False))
     
+    # Midline
+    xv = max(ax, dx)
+    xh = min(bx, cx)
+    rv = cart2pol(xv, 0.)[0]
+    rh = cart2pol(xh, 0.)[0]
+  
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[rv, rh],
+            theta=[0., 180.],
+            mode='lines',
+            line=dict(color=linecolor),
+            opacity=1.,
+            showlegend=False))
+    
+    # Working Radius as scatter plot
     fig.add_trace(
         go.Scatterpolar(
             r=df_ro['ro'],
@@ -407,7 +444,29 @@ def topview_plot_ro_polar(d, d_ro, mode='lines+markers'):
             name='Max Reachout',
             line_color=rocolor,
             thetaunit='degrees'))
+    
+    # Marker for center
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[0.],
+            theta=[0.],
+            mode='markers',
+            marker_color=linecolor,
+            showlegend=False))
+    
+    # Marker for dead weight position
+    fig.add_trace(
+        go.Scatterpolar(
+            r=[d['xe']],
+            theta=[0.],
+            mode='markers+text',
+            marker_color=loadcolor,
+            text = 'Dead weight (fe)',
+            showlegend=False))
         
+    # Set text label positions
+    fig.update_traces(textposition='top center')
+    
     # Legend title
     fig.update_layout(legend_title_text='')
     

@@ -18,7 +18,27 @@ def _update_slider(slider_keys, values):
 
 if check_password():
     # ini, _ = loadcases.elast_a()
-    ini, _ = loadcases.liftoff_d()
+    # ini, _ = loadcases.liftoff_d()
+    
+    opts = ['Elast A',
+            'Elast B',
+            'Elast C',
+            'Liftoff A',
+            'Liftoff B',
+            'Liftoff C',
+            'Liftoff D']
+    
+    lcs = {'Elast A': loadcases.elast_a(),
+           'Elast B': loadcases.elast_a(),
+           'Elast C': loadcases.elast_c(),
+           'Liftoff A': loadcases.liftoff_a(),
+           'Liftoff B': loadcases.liftoff_b(),
+           'Liftoff C': loadcases.liftoff_c(),
+           'Liftoff D': loadcases.liftoff_d()}
+    
+    st.sidebar.header('Import Loadcase')
+    selection = st.sidebar.selectbox('Select a predefined data set', options=opts, index=3, help='Lodcase data sets are defined in elastomech\loadcases.py', key='sel-lc')
+    ini, _ = lcs[selection]
     
     # Initialize session state
     for key in ini:
@@ -39,16 +59,16 @@ if check_password():
     st.sidebar.header('Load parameters')
     
     # Create sliders in sidebar (Loads)
-    fl = st.sidebar.slider('z Load force (fl)', min_value=lim['fl_min'], max_value=lim['fl_max'], value=ini['fl'], step=1., key='sl-fl')
-    ml = st.sidebar.slider('Load moment from boom (ml)', lim['ml_min'], lim['ml_max'], ini['ml'], key='sl-ml')
+    fl = st.sidebar.number_input('z Load force (fl)', min_value=lim['fl_min'], max_value=lim['fl_max'], value=ini['fl'], step=1., format='%.2f', key='sl-fl')
+    ml = st.sidebar.number_input('Load moment from boom (ml)', lim['ml_min'], lim['ml_max'], ini['ml'], step=1., format='%.2f', key='sl-ml')
     phi_deg_boom = st.sidebar.slider('Boom angle (phi_deg_boom)', lim['phi_deg_boom_min'], lim['phi_deg_boom_max'], ini['phi_deg_boom'], step=1., key='sl-pdb')
     
     # Compute loads from input
     phi_deg_load = phi_deg_boom + 90.
     mlx, mly = xy_load(ml, phi_deg_load)
     st.sidebar.info(f'mlx: {mlx:.2f}  |  mly: {mly:.2f}')
-    fe = st.sidebar.slider('Dead weight (fe)', min_value=lim['fe_min'], max_value=lim['fe_max'], value=ini['fe'], step=1., key='sl-fe')
-    xe = st.sidebar.slider('Distance Ring – Dead weight (xe)', min_value=lim['xe_min'], max_value=lim['xe_max'], value=ini['xe'], key='sl-xe')
+    fe = st.sidebar.number_input('Dead weight (fe)', min_value=lim['fe_min'], max_value=lim['fe_max'], value=ini['fe'], step=1., format='%.2f', help='Attention. This is a force, not a weight.', key='sl-fe')
+    xe = st.sidebar.number_input('Distance Ring – Dead weight (xe)', min_value=lim['xe_min'], max_value=lim['xe_max'], value=ini['xe'], step=0.001, format='%.3f', key='sl-xe')
     
     # Reset button
     st.sidebar.button("Reset Loads",
@@ -64,9 +84,9 @@ if check_password():
     y2 = st.sidebar.slider('Support B (y2)', lim['y_min'], lim['y_max'], ini['y2'], key='sl-y2')
     y3 = st.sidebar.slider('Support C (y3)', lim['y_min'], lim['y_max'], ini['y3'], key='sl-y3')
     y4 = st.sidebar.slider('Support D (y4)', lim['y_min'], lim['y_max'], ini['y4'], key='sl-y4')
-    x14 = st.sidebar.slider('Distance Front – Ring (x14)', lim['x_min'], lim['x_max'], ini['x14'], key='sl-x14')
-    x23 = st.sidebar.slider('Distance Rear – Ring (x23)', lim['x_min'], lim['x_max'], ini['x23'], key='sl-x23')
-    
+    x14 = st.sidebar.number_input('Distance Front – Ring (x14)', lim['x_min'], lim['x_max'], ini['x14'], step=0.001, format='%.3f', key='sl-x14')
+    x23 = st.sidebar.number_input('Distance Rear – Ring (x23)', lim['x_min'], lim['x_max'], ini['x23'], step=0.001, format='%.3f', key='sl-x23')
+   
     # Reset button
     st.sidebar.button("Reset Geometry",
                       on_click=_update_slider,
@@ -76,9 +96,9 @@ if check_password():
     
     # Create sliders in sidebar (Springs)
     st.sidebar.header('Hooke parameters')
-    d14 = st.sidebar.slider('Torsion spring rate front (d14)', lim['dt_min'], lim['dt_max'], ini['d14'], 100., key='sl-d14')
-    d23 = st.sidebar.slider('Torsion spring rate rear (d23)', lim['dt_min'], lim['dt_max'], ini['d23'], 100., key='sl-d23')
-    d1 = st.sidebar.slider('Compression spring rate @ ABCD (d1...d4)', lim['d_min'], lim['d_max'], ini['d1'], 100., key='sl-d1')
+    d14 = st.sidebar.number_input('Torsion spring rate front (d14)', lim['dt_min'], lim['dt_max'], ini['d14'], step=1.0e+4, format="%.4e", key='sl-d14')
+    d23 = st.sidebar.number_input('Torsion spring rate rear (d23)', lim['dt_min'], lim['dt_max'], ini['d23'], step=1.0e+4, format="%.4e", key='sl-d23')
+    d1 = st.sidebar.number_input('Compression spring rate @ ABCD (d1...d4)', lim['d_min'], lim['d_max'], ini['d1'], step=1.0e+4, format="%.4e", key='sl-d1')
     d2 = d1
     d3 = d1
     d4 = d1
