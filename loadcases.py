@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Wed Dec  7 08:42:26 2022
+"""Predefined loadcases and parameter limits for both dashboard pages."""
+from helpers import vec_load
 
-@author: 500585
-"""
-from stuetzkraft_helpers import vec_load
-
-lim = {  # Parametergrenzen
+# =============================================================================
+# ---- Parameter limits
+# =============================================================================
+lim_support_force_dist = {
     # Stützen
     'y_min': 0.,
     'y_max': 4.,
@@ -30,9 +29,9 @@ lim = {  # Parametergrenzen
     'fe_max': 100000.,
     'xe_min': -10.,
     'xe_max': 10.
-    }
+}
 
-lim_ro = {  # Parametergrenzen
+lim_working_radius = {
     # Stützen
     'y_min': 0.,
     'y_max': 4.,
@@ -70,19 +69,37 @@ lim_ro = {  # Parametergrenzen
     'f4_min': 0.,
     'f4_max': 100000.,
     'f_ro_min': 0.,
-    'f_ro_max': 3000.*10.,
+    'f_ro_max': 3000. * 10.,
     't14x_min': -200000.,
     't14x_max': 200000.,
     't23x_min': -200000.,
     't23x_max': 200000.,
-    }
-      
+    'sv14_min': 0.,
+    'sv14_max': 500.0e+6,
+    'sv23_min': 0.,
+    'sv23_max': 500.0e+6,
+    # Frame Box Section
+    'B_min': 0.1,
+    'B_max': 3.,
+    'H_min': 0.1,
+    'H_max': 3.,
+    'tb_min': 0.001,
+    'tb_max': 1.5,
+    'th_min': 0.001,
+    'th_max': 1.5
+}
+
+
+# =============================================================================
+# ---- Predefined loadcases for Support Force Distribution App
+# =============================================================================
 def elast_a():
-    '''
-    Testcase Elastostatisches Modell
+    """
+    Testcase Elastostatisches Modell.
+
     - phi = 0°
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 0.,
@@ -96,15 +113,15 @@ def elast_a():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 0.
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -112,7 +129,7 @@ def elast_a():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-       
+
     expected = {
         'f1': 9641.46103514847,
         'f2': 16858.5389648515,
@@ -124,16 +141,18 @@ def elast_a():
         's4': 0.00321230752428759,
         't14x': 0.,
         't23x': 0.,
-        }
-    
+    }
+
     return ini, expected
 
+
 def elast_b():
-    '''
-    Testcase Elastostatisches Modell
+    """
+    Testcase Elastostatisches Modell.
+
     - phi = 30°
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': -62619.2469377536,
@@ -147,15 +166,15 @@ def elast_b():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 30.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -163,7 +182,7 @@ def elast_b():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-    
+
     expected = {
         'f1': 17672.7419752557,
         'f2': 19263.7991810366,
@@ -175,16 +194,18 @@ def elast_b():
         's4': 0.0036209419026212,
         't14x': 20414.4014157823,
         't23x': -42204.8455219713,
-        }
-    
+    }
+
     return ini, expected
 
+
 def elast_c():
-    '''
-    Testcase Elastostatisches Modell
+    """
+    Testcase Elastostatisches Modell.
+
     - phi = 333°
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 56857.0864211697,
@@ -198,15 +219,15 @@ def elast_c():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 333.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -214,7 +235,7 @@ def elast_c():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-       
+
     expected = {
         'f1': 11461.1163094514,
         'f2': 5562.70262035366,
@@ -226,19 +247,21 @@ def elast_c():
         's4': 0.00587714746676719,
         't14x': -18535.8886012695,
         't23x': 38321.1978199003,
-        }
-    
+    }
+
     return ini, expected
 
+
 def liftoff_a():
-    '''
-    Testcase Abheben Stütze 1/A
+    """
+    Testcase Abheben Stütze 1/A.
+
     - phi = 270°
     - Ausladung 10m
     - FKorb 406kg
     - Feigen 3000 N
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 125238.493875507,
@@ -252,15 +275,15 @@ def liftoff_a():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 270.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -268,7 +291,7 @@ def liftoff_a():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-        
+
     expected = {
         'f1': 0,
         'f2': 5626.91768741545,
@@ -280,19 +303,21 @@ def liftoff_a():
         's4': 0.00303885534735296,
         't14x': -27362.5783348254,
         't23x': 97875.9155406819,
-        }
-    
+    }
+
     return ini, expected
 
+
 def liftoff_b():
-    '''
-    Testcase Abheben Stütze 2/B
+    """
+    Testcase Abheben Stütze 2/B.
+
     - phi = 320°
     - Ausladung 12m
     - FKorb 406kg
     - Feigen 5000 N
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 109848.595018512,
@@ -306,15 +331,15 @@ def liftoff_b():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 320.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -322,7 +347,7 @@ def liftoff_b():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
- 
+
     expected = {
         'f1': 9191.90083024792,
         'f2': 0,
@@ -334,19 +359,21 @@ def liftoff_b():
         's2': -0.00504969323594799,
         's3': 0.00700133076326954,
         's4': 0.00826084797705463,
-        }
-    
+    }
+
     return ini, expected
 
+
 def liftoff_c():
-    '''
-    Testcase Abheben Stütze 3/C
+    """
+    Testcase Abheben Stütze 3/C.
+
     - phi = 45°
     - Ausladung 12m
     - FKorb 406kg
     - Feigen 5000 N
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': -120840.360440805,
@@ -360,15 +387,15 @@ def liftoff_c():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 45.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -388,19 +415,21 @@ def liftoff_c():
         's2': 0.00760218759054685,
         's3': -0.00596733238948251,
         's4': 0.00245215847661629,
-        }
-    
+    }
+
     return ini, expected
 
+
 def liftoff_d():
-    '''
-    Testcase Abheben Stütze 4/D
+    """
+    Testcase Abheben Stütze 4/D.
+
     - phi = 120°
     - Ausladung 8m
     - FKorb 406kg
     - Feigen 5000 N
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': -68920.8227487951,
@@ -414,15 +443,15 @@ def liftoff_d():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 120.,
-        }
-    
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -430,7 +459,7 @@ def liftoff_d():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-    
+
     expected = {
         'f1': 3421.40455384291,
         'f2': 35565.3992376229,
@@ -442,19 +471,25 @@ def liftoff_d():
         's2': 0.011849552589469,
         's3': 0.00533521947358839,
         's4': -0.0056050154711532,
-        }
-    
+    }
+
     return ini, expected
 
+# =============================================================================
+# ---- Predefined loadcases for Working Radius App
+# =============================================================================
+
+
 def ro_default():
-    '''
-    Testcase Abheben Stütze 1/A
+    """
+    Testcase Abheben Stütze 1/A.
+
     - phi = 270°
     - Ausladung 10m
     - FKorb 406kg
     - Feigen 3000 N
     - mit Eigengewicht
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 125238.493875507,
@@ -468,16 +503,20 @@ def ro_default():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 270.,
-        'f_ro': 406.*9.81,
-        }
-    
+        'f_ro': 406. * 9.81,
+        'H': 0.410,
+        'B': 0.800,
+        'th': 0.007,
+        'tb': 0.014,
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -485,7 +524,7 @@ def ro_default():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-        
+
     expected = {
         'f1': 0,
         'f2': 5626.91768741545,
@@ -497,19 +536,21 @@ def ro_default():
         's4': 0.00303885534735296,
         't14x': -27362.5783348254,
         't23x': 97875.9155406819,
-        }
-    
+    }
+
     return ini, expected
 
+
 def ro_pillow_a():
-    '''
-    Testcase Kissenform
+    """
+    Testcase Kissenform.
+
     Normiert@
     - phi = 0°
     - Ausladung 30m
     - FKorb 2542kg --> ml 748250.3Nm
     - Feigen 5000N
-    '''
+    """
     ini = {  # Lasten
         'fl': 50000.,
         'mlx': 125238.493875507,
@@ -523,16 +564,20 @@ def ro_pillow_a():
         'd23': 155189025.287762,
         'd': 3001412.83555556,
         'phi_deg_boom': 270.,
-        'f_ro': 2542.*9.81,
-        }
-    
+        'f_ro': 2542. * 9.81,
+        'H': 0.410,
+        'B': 0.800,
+        'th': 0.007,
+        'tb': 0.014,
+    }
+
     ini['ml'], _ = vec_load(ini['mlx'], ini['mly'])
-    
+
     # Symmetrie
     ini['y1'] = ini['h']
     ini['y2'] = ini['h']
     ini['y3'] = ini['h']
-    ini['y4'] = ini['h']  
+    ini['y4'] = ini['h']
     # Boom angle
     ini['phi_deg_load'] = ini['phi_deg_boom'] + 90.
     # d
@@ -540,9 +585,9 @@ def ro_pillow_a():
     ini['d2'] = ini['d']
     ini['d3'] = ini['d']
     ini['d4'] = ini['d']
-        
+
     expected = {
 
-        }
-    
+    }
+
     return ini, expected
